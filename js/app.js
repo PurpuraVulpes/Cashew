@@ -87,9 +87,10 @@ class CashewApp {
         // Recent transactions
         await this.transactions.loadRecent(5);
 
-        // Donut chart
-        this.drawHomeChart(monthTransactions.filter(t => t.type === 'expense'));
-    }
+        // Donut chart (avec délai pour attendre le rendu)
+requestAnimationFrame(() => {
+    this.drawHomeChart(monthTransactions.filter(t => t.type === 'expense'));
+});
 
     drawHomeChart(expenses) {
         const categoryTotals = {};
