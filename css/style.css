@@ -1555,13 +1555,18 @@ input:checked + .slider::before {
     font-size: 14px;
     font-weight: 500;
     z-index: 2000;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease;
     box-shadow: var(--shadow-xl);
     white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
 }
 
 .toast.show {
     transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    visibility: visible;
 }
 
 /* ========== TRANSACTION DETAIL ========== */
