@@ -15,7 +15,10 @@ const Charts = {
 
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
-        const size = Math.min(canvas.parentElement.clientWidth, 200);
+        
+        // Fix: ensure minimum size
+        const parentWidth = canvas.parentElement.clientWidth || 300;
+        const size = Math.max(150, Math.min(parentWidth, 200));
 
         canvas.width = size * dpr;
         canvas.height = size * dpr;
@@ -25,8 +28,8 @@ const Charts = {
 
         const centerX = size / 2;
         const centerY = size / 2;
-        const radius = size / 2 - 10;
-        const innerRadius = radius * 0.6;
+        const radius = Math.max(20, size / 2 - 10);
+        const innerRadius = Math.max(10, radius * 0.6);
         const total = data.reduce((sum, d) => sum + d.value, 0);
 
         if (total === 0) {
@@ -62,7 +65,7 @@ const Charts = {
 
         // Center text
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#0f172a';
-        ctx.font = '800 18px Inter';
+        ctx.font = '800 16px Inter';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(CurrencyUtils.format(total), centerX, centerY - 8);
@@ -78,7 +81,8 @@ const Charts = {
 
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
-        const width = canvas.parentElement.clientWidth - 40;
+        const parentWidth = canvas.parentElement.clientWidth || 300;
+        const width = Math.max(200, parentWidth - 40);
         const height = 200;
 
         canvas.width = width * dpr;
@@ -88,10 +92,9 @@ const Charts = {
         ctx.scale(dpr, dpr);
 
         const padding = { top: 20, right: 10, bottom: 30, left: 50 };
-        const chartW = width - padding.left - padding.right;
-        const chartH = height - padding.top - padding.bottom;
+        const chartW = Math.max(50, width - padding.left - padding.right);
+        const chartH = Math.max(50, height - padding.top - padding.bottom);
 
-        // Find max value
         let maxVal = 0;
         datasets.forEach(ds => {
             ds.data.forEach(v => { if (v > maxVal) maxVal = v; });
@@ -99,7 +102,6 @@ const Charts = {
         if (maxVal === 0) maxVal = 100;
         maxVal = Math.ceil(maxVal * 1.1);
 
-        // Grid lines
         const gridLines = 4;
         ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#e2e8f0';
         ctx.lineWidth = 0.5;
@@ -117,9 +119,7 @@ const Charts = {
             ctx.fillText(Math.round(val).toString(), padding.left - 8, y + 3);
         }
 
-        // X labels
         ctx.textAlign = 'center';
-        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-tertiary').trim() || '#94a3b8';
         const step = Math.max(1, Math.floor(labels.length / 7));
         labels.forEach((label, i) => {
             if (i % step === 0 || i === labels.length - 1) {
@@ -128,7 +128,6 @@ const Charts = {
             }
         });
 
-        // Draw datasets
         datasets.forEach((ds, dsIdx) => {
             const color = ds.color || this.colors[dsIdx];
             ctx.strokeStyle = color;
@@ -145,7 +144,6 @@ const Charts = {
             });
             ctx.stroke();
 
-            // Gradient fill
             const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
             gradient.addColorStop(0, color + '30');
             gradient.addColorStop(1, color + '00');
@@ -156,7 +154,6 @@ const Charts = {
             ctx.fillStyle = gradient;
             ctx.fill();
 
-            // Dots
             ds.data.forEach((val, i) => {
                 const x = padding.left + (chartW / Math.max(ds.data.length - 1, 1)) * i;
                 const y = padding.top + chartH - (val / maxVal) * chartH;
@@ -177,7 +174,8 @@ const Charts = {
 
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
-        const width = canvas.parentElement.clientWidth - 40;
+        const parentWidth = canvas.parentElement.clientWidth || 300;
+        const width = Math.max(200, parentWidth - 40);
         const height = 200;
 
         canvas.width = width * dpr;
@@ -187,16 +185,15 @@ const Charts = {
         ctx.scale(dpr, dpr);
 
         const padding = { top: 20, right: 10, bottom: 40, left: 50 };
-        const chartW = width - padding.left - padding.right;
-        const chartH = height - padding.top - padding.bottom;
+        const chartW = Math.max(50, width - padding.left - padding.right);
+        const chartH = Math.max(50, height - padding.top - padding.bottom);
 
         let maxVal = Math.max(...data, 1);
         maxVal = Math.ceil(maxVal * 1.1);
 
-        const barWidth = Math.min(30, (chartW / data.length) * 0.6);
-        const gap = (chartW - barWidth * data.length) / (data.length + 1);
+        const barWidth = Math.max(10, Math.min(30, (chartW / Math.max(data.length, 1)) * 0.6));
+        const gap = Math.max(4, (chartW - barWidth * data.length) / (data.length + 1));
 
-        // Grid
         const gridLines = 4;
         ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#e2e8f0';
         ctx.lineWidth = 0.5;
@@ -214,14 +211,12 @@ const Charts = {
             ctx.fillText(Math.round(val).toString(), padding.left - 8, y + 3);
         }
 
-        // Bars
         data.forEach((val, i) => {
             const x = padding.left + gap + (barWidth + gap) * i;
             const barH = (val / maxVal) * chartH;
             const y = padding.top + chartH - barH;
             const color = colors ? (colors[i] || this.colors[i % this.colors.length]) : this.colors[i % this.colors.length];
 
-            // Bar with rounded top
             const r = Math.min(4, barWidth / 2);
             ctx.beginPath();
             ctx.moveTo(x, y + r);
@@ -233,7 +228,6 @@ const Charts = {
             ctx.fillStyle = color;
             ctx.fill();
 
-            // Label
             ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-tertiary').trim() || '#94a3b8';
             ctx.font = '400 9px Inter';
             ctx.textAlign = 'center';
