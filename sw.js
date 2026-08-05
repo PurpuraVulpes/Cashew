@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cashew-v2';
+const CACHE_NAME = 'cashew-v3';
 
 self.addEventListener('install', (e) => {
     self.skipWaiting();
@@ -16,16 +16,13 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-    // Only cache GET requests
     if (e.request.method !== 'GET') return;
+    if (!e.request.url.startsWith('http')) return;
     
     e.respondWith(
-        caches.match(e.request).then(cachedResponse => {
-            if (cachedResponse) return cachedResponse;
-            
-            return fetch(e.request).then(response => {
-                // Only cache successful responses
-                if (!response || response.status !== 200 || response.type === 'error') {
+        fetch(e.request)
+            .then(response => {
+                if (!response || response.status !== 200) {
                     return response;
                 }
                 
@@ -35,12 +32,14 @@ self.addEventListener('fetch', (e) => {
                 });
                 
                 return response;
-            }).catch(() => {
-                // Fallback for navigation requests
-                if (e.request.mode === 'navigate') {
-                    return caches.match('index.html');
-                }
-            });
-        })
+            })
+            .catch(() => {
+                return caches.match(e.request).then(cached => {
+                    if (cached) return cached;
+                    if (e.request.mode === 'navigate') {
+                        return caches.match('./');
+                    }
+                });
+            })
     );
 });
