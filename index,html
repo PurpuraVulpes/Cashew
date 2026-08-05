@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cashew - Budget & Expense Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Splash Screen -->
+        <div id="splash-screen" class="splash-screen">
+            <div class="splash-content">
+                <div class="splash-icon">🥜</div>
+                <h1>Cashew</h1>
+                <p>Budget & Expense Tracker</p>
+                <div class="splash-loader"></div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="main-app hidden">
+            <!-- Header -->
+            <header id="app-header" class="app-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1 class="header-title">Accueil</h1>
+                    </div>
+                    <div class="header-right">
+                        <button class="icon-btn" id="btn-search" aria-label="Rechercher">
+                            <span class="material-icons-round">search</span>
+                        </button>
+                        <button class="icon-btn" id="btn-notifications" aria-label="Notifications">
+                            <span class="material-icons-round">notifications_none</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Pages Container -->
+            <main id="pages-container" class="pages-container">
+                <!-- Home Page -->
+                <section id="page-home" class="page active">
+                    <div class="page-content">
+                        <!-- Balance Card -->
+                        <div class="balance-card">
+                            <div class="balance-label">Solde total</div>
+                            <div class="balance-amount" id="total-balance">0,00 €</div>
+                            <div class="balance-change" id="balance-change">
+                                <span class="material-icons-round">trending_up</span>
+                                <span>+0,00 € ce mois</span>
+                            </div>
+                            <div class="balance-actions">
+                                <div class="balance-stat">
+                                    <div class="stat-icon income">
+                                        <span class="material-icons-round">arrow_downward</span>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Revenus</span>
+                                        <span class="stat-value" id="total-income">0,00 €</span>
+                                    </div>
+                                </div>
+                                <div class="balance-divider"></div>
+                                <div class="balance-stat">
+                                    <div class="stat-icon expense">
+                                        <span class="material-icons-round">arrow_upward</span>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Dépenses</span>
+                                        <span class="stat-value" id="total-expenses">0,00 €</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Budget Overview -->
+                        <div class="section-header">
+                            <h2>Budgets</h2>
+                            <button class="text-btn" onclick="app.router.navigate('budgets')">Voir tout</button>
+                        </div>
+                        <div id="budget-overview" class="budget-overview">
+                            <!-- Dynamic budget cards -->
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="section-header">
+                            <h2>Transactions récentes</h2>
+                            <button class="text-btn" onclick="app.router.navigate('transactions')">Voir tout</button>
+                        </div>
+                        <div id="recent-transactions" class="transactions-list">
+                            <!-- Dynamic transactions -->
+                        </div>
+
+                        <!-- Spending by Category -->
+                        <div class="section-header">
+                            <h2>Dépenses par catégorie</h2>
+                        </div>
+                        <div id="category-chart" class="category-chart-container">
+                            <canvas id="donut-chart"></canvas>
+                            <div id="category-legend" class="category-legend"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Transactions Page -->
+                <section id="page-transactions" class="page">
+                    <div class="page-content">
+                        <div class="period-selector" id="transaction-period">
+                            <button class="period-btn active" data-period="week">Semaine</button>
+                            <button class="period-btn" data-period="month">Mois</button>
+                            <button class="period-btn" data-period="year">Année</button>
+                            <button class="period-btn" data-period="all">Tout</button>
+                        </div>
+                        <div class="transaction-summary" id="transaction-summary">
+                            <div class="summary-item income">
+                                <span class="material-icons-round">arrow_downward</span>
+                                <span id="period-income">0,00 €</span>
+                            </div>
+                            <div class="summary-item expense">
+                                <span class="material-icons-round">arrow_upward</span>
+                                <span id="period-expenses">0,00 €</span>
+                            </div>
+                        </div>
+                        <div id="all-transactions" class="transactions-list grouped">
+                            <!-- Dynamic grouped transactions -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Budgets Page -->
+                <section id="page-budgets" class="page">
+                    <div class="page-content">
+                        <div class="period-selector" id="budget-period">
+                            <button class="period-btn active" data-period="month">Mensuel</button>
+                            <button class="period-btn" data-period="week">Hebdo</button>
+                            <button class="period-btn" data-period="year">Annuel</button>
+                        </div>
+                        <div id="budgets-list" class="budgets-list">
+                            <!-- Dynamic budgets -->
+                        </div>
+                        <button class="add-budget-btn" id="btn-add-budget">
+                            <span class="material-icons-round">add</span>
+                            Ajouter un budget
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Stats Page -->
+                <section id="page-stats" class="page">
+                    <div class="page-content">
+                        <div class="period-selector" id="stats-period">
+                            <button class="period-btn" data-period="week">Semaine</button>
+                            <button class="period-btn active" data-period="month">Mois</button>
+                            <button class="period-btn" data-period="year">Année</button>
+                        </div>
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <div class="stat-card-label">Total dépensé</div>
+                                <div class="stat-card-value" id="stat-total-spent">0,00 €</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-label">Moyenne / jour</div>
+                                <div class="stat-card-value" id="stat-avg-day">0,00 €</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-label">Plus grosse dépense</div>
+                                <div class="stat-card-value" id="stat-biggest">0,00 €</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-label">Nb transactions</div>
+                                <div class="stat-card-value" id="stat-count">0</div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Évolution des dépenses</h3>
+                            <canvas id="line-chart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Par catégorie</h3>
+                            <canvas id="bar-chart"></canvas>
+                        </div>
+                        <div id="top-categories" class="top-categories">
+                            <h3>Top catégories</h3>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Page -->
+                <section id="page-settings" class="page">
+                    <div class="page-content">
+                        <div class="settings-group">
+                            <h3>Apparence</h3>
+                            <div class="setting-item" id="setting-theme">
+                                <div class="setting-info">
+                                    <span class="material-icons-round">dark_mode</span>
+                                    <span>Thème sombre</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="theme-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item" id="setting-color">
+                                <div class="setting-info">
+                                    <span class="material-icons-round">palette</span>
+                                    <span>Couleur d'accent</span>
+                                </div>
+                                <div class="color-options" id="color-options">
+                                    <button class="color-dot active" data-color="#2563eb" style="background:#2563eb"></button>
+                                    <button class="color-dot" data-color="#7c3aed" style="background:#7c3aed"></button>
+                                    <button class="color-dot" data-color="#059669" style="background:#059669"></button>
+                                    <button class="color-dot" data-color="#dc2626" style="background:#dc2626"></button>
+                                    <button class="color-dot" data-color="#d97706" style="background:#d97706"></button>
+                                    <button class="color-dot" data-color="#ec4899" style="background:#ec4899"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Devise</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="material-icons-round">euro</span>
+                                    <span>Devise</span>
+                                </div>
+                                <select id="currency-select" class="setting-select">
+                                    <option value="EUR">€ EUR</option>
+                                    <option value="USD">$ USD</option>
+                                    <option value="GBP">£ GBP</option>
+                                    <option value="CHF">CHF</option>
+                                    <option value="CAD">$ CAD</option>
+                                    <option value="JPY">¥ JPY</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Catégories</h3>
+                            <div class="setting-item" onclick="app.categories.showManager()">
+                                <div class="setting-info">
+                                    <span class="material-icons-round">category</span>
+                                    <span>Gérer les catégories</span>
+                                </div>
+                                <span class="material-icons-round">chevron_right</span>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Données</h3>
+                            <div class="setting-item" onclick="app.exportData()">
+                                <div class="setting-info">
+                                    <span class="material-icons-round">download</span>
+                                    <span>Exporter les données</span>
+                                </div>
+                                <span class="material-icons-round">chevron_right</span>
+                            </div>
+                            <div class="setting-item" onclick="document.getElementById('import-file').click()">
+                                <div class="setting-info">
+                                    <span class="material-icons-round">upload</span>
+                                    <span>Importer des données</span>
+                                </div>
+                                <span class="material-icons-round">chevron_right</span>
+                                <input type="file" id="import-file" accept=".json" hidden>
+                            </div>
+                            <div class="setting-item danger" onclick="app.clearAllData()">
+                                <div class="setting-info">
+                                    <span class="material-icons-round">delete_forever</span>
+                                    <span>Supprimer toutes les données</span>
+                                </div>
+                                <span class="material-icons-round">chevron_right</span>
+                            </div>
+                        </div>
+                        <div class="app-info">
+                            <div class="app-logo">🥜</div>
+                            <p>Cashew v1.0.0</p>
+                            <p class="app-subtitle">Budget & Expense Tracker</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav" id="bottom-nav">
+                <button class="nav-item active" data-page="home">
+                    <span class="material-icons-round">home</span>
+                    <span class="nav-label">Accueil</span>
+                </button>
+                <button class="nav-item" data-page="transactions">
+                    <span class="material-icons-round">receipt_long</span>
+                    <span class="nav-label">Transactions</span>
+                </button>
+                <button class="nav-fab" id="btn-add-transaction" aria-label="Ajouter">
+                    <span class="material-icons-round">add</span>
+                </button>
+                <button class="nav-item" data-page="budgets">
+                    <span class="material-icons-round">account_balance_wallet</span>
+                    <span class="nav-label">Budgets</span>
+                </button>
+                <button class="nav-item" data-page="settings">
+                    <span class="material-icons-round">settings</span>
+                    <span class="nav-label">Réglages</span>
+                </button>
+            </nav>
+
+            <!-- FAB -->
+            <!-- Included in nav -->
+        </div>
+    </div>
+
+    <!-- Add/Edit Transaction Modal -->
+    <div class="modal-overlay" id="modal-transaction">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-transaction-title">Nouvelle transaction</h2>
+                <button class="icon-btn" onclick="app.closeModal('modal-transaction')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="transaction-id">
+                
+                <!-- Type Toggle -->
+                <div class="type-toggle">
+                    <button class="type-btn active" data-type="expense">
+                        <span class="material-icons-round">arrow_upward</span>
+                        Dépense
+                    </button>
+                    <button class="type-btn" data-type="income">
+                        <span class="material-icons-round">arrow_downward</span>
+                        Revenu
+                    </button>
+                    <button class="type-btn" data-type="transfer">
+                        <span class="material-icons-round">swap_horiz</span>
+                        Transfert
+                    </button>
+                </div>
+
+                <!-- Amount Input -->
+                <div class="amount-input-container">
+                    <div class="amount-display" id="amount-display">
+                        <span class="currency-symbol" id="input-currency">€</span>
+                        <span class="amount-value" id="amount-value">0</span>
+                    </div>
+                    <div class="numpad">
+                        <button class="numpad-key" data-key="1">1</button>
+                        <button class="numpad-key" data-key="2">2</button>
+                        <button class="numpad-key" data-key="3">3</button>
+                        <button class="numpad-key" data-key="4">4</button>
+                        <button class="numpad-key" data-key="5">5</button>
+                        <button class="numpad-key" data-key="6">6</button>
+                        <button class="numpad-key" data-key="7">7</button>
+                        <button class="numpad-key" data-key="8">8</button>
+                        <button class="numpad-key" data-key="9">9</button>
+                        <button class="numpad-key" data-key=".">.</button>
+                        <button class="numpad-key" data-key="0">0</button>
+                        <button class="numpad-key" data-key="backspace">
+                            <span class="material-icons-round">backspace</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="form-group">
+                    <label>Titre</label>
+                    <input type="text" id="transaction-title" placeholder="Ex: Courses, Salaire..." autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>Catégorie</label>
+                    <div class="category-selector" id="category-selector">
+                        <!-- Dynamic categories -->
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label>Date</label>
+                        <input type="date" id="transaction-date">
+                    </div>
+                    <div class="form-group flex-1">
+                        <label>Heure</label>
+                        <input type="time" id="transaction-time">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="transaction-notes" placeholder="Ajouter une note..." rows="2"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tags</label>
+                    <input type="text" id="transaction-tags" placeholder="Séparer par des virgules">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('modal-transaction')">Annuler</button>
+                <button class="btn btn-primary" id="btn-save-transaction">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Budget Modal -->
+    <div class="modal-overlay" id="modal-budget">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-budget-title">Nouveau budget</h2>
+                <button class="icon-btn" onclick="app.closeModal('modal-budget')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="budget-id">
+                <div class="form-group">
+                    <label>Nom du budget</label>
+                    <input type="text" id="budget-name" placeholder="Ex: Alimentation, Loisirs...">
+                </div>
+                <div class="form-group">
+                    <label>Montant limite</label>
+                    <input type="number" id="budget-amount" placeholder="0.00" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Catégories</label>
+                    <div class="category-selector multi" id="budget-categories">
+                        <!-- Dynamic categories -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Période</label>
+                    <select id="budget-period-select" class="setting-select">
+                        <option value="month">Mensuel</option>
+                        <option value="week">Hebdomadaire</option>
+                        <option value="year">Annuel</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Couleur</label>
+                    <div class="color-options" id="budget-color-options">
+                        <button class="color-dot active" data-color="#2563eb" style="background:#2563eb"></button>
+                        <button class="color-dot" data-color="#7c3aed" style="background:#7c3aed"></button>
+                        <button class="color-dot" data-color="#059669" style="background:#059669"></button>
+                        <button class="color-dot" data-color="#dc2626" style="background:#dc2626"></button>
+                        <button class="color-dot" data-color="#d97706" style="background:#d97706"></button>
+                        <button class="color-dot" data-color="#ec4899" style="background:#ec4899"></button>
+                        <button class="color-dot" data-color="#06b6d4" style="background:#06b6d4"></button>
+                        <button class="color-dot" data-color="#84cc16" style="background:#84cc16"></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Icône</label>
+                    <div class="icon-selector" id="budget-icon-selector">
+                        <button class="icon-option active" data-icon="shopping_cart">
+                            <span class="material-icons-round">shopping_cart</span>
+                        </button>
+                        <button class="icon-option" data-icon="restaurant">
+                            <span class="material-icons-round">restaurant</span>
+                        </button>
+                        <button class="icon-option" data-icon="directions_car">
+                            <span class="material-icons-round">directions_car</span>
+                        </button>
+                        <button class="icon-option" data-icon="home">
+                            <span class="material-icons-round">home</span>
+                        </button>
+                        <button class="icon-option" data-icon="local_hospital">
+                            <span class="material-icons-round">local_hospital</span>
+                        </button>
+                        <button class="icon-option" data-icon="school">
+                            <span class="material-icons-round">school</span>
+                        </button>
+                        <button class="icon-option" data-icon="sports_esports">
+                            <span class="material-icons-round">sports_esports</span>
+                        </button>
+                        <button class="icon-option" data-icon="flight">
+                            <span class="material-icons-round">flight</span>
+                        </button>
+                        <button class="icon-option" data-icon="savings">
+                            <span class="material-icons-round">savings</span>
+                        </button>
+                        <button class="icon-option" data-icon="pets">
+                            <span class="material-icons-round">pets</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('modal-budget')">Annuler</button>
+                <button class="btn btn-danger hidden" id="btn-delete-budget">Supprimer</button>
+                <button class="btn btn-primary" id="btn-save-budget">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Manager Modal -->
+    <div class="modal-overlay" id="modal-categories">
+        <div class="modal modal-full">
+            <div class="modal-header">
+                <h2>Gérer les catégories</h2>
+                <button class="icon-btn" onclick="app.closeModal('modal-categories')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="categories-manager-list" class="categories-manager-list">
+                    <!-- Dynamic -->
+                </div>
+                <button class="btn btn-outline full-width" id="btn-add-category">
+                    <span class="material-icons-round">add</span>
+                    Ajouter une catégorie
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal-overlay" id="modal-category-edit">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-category-title">Nouvelle catégorie</h2>
+                <button class="icon-btn" onclick="app.closeModal('modal-category-edit')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="category-id">
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" id="category-name" placeholder="Nom de la catégorie">
+                </div>
+                <div class="form-group">
+                    <label>Icône</label>
+                    <div class="icon-selector" id="category-icon-selector">
+                        <button class="icon-option active" data-icon="shopping_cart"><span class="material-icons-round">shopping_cart</span></button>
+                        <button class="icon-option" data-icon="restaurant"><span class="material-icons-round">restaurant</span></button>
+                        <button class="icon-option" data-icon="directions_car"><span class="material-icons-round">directions_car</span></button>
+                        <button class="icon-option" data-icon="home"><span class="material-icons-round">home</span></button>
+                        <button class="icon-option" data-icon="local_hospital"><span class="material-icons-round">local_hospital</span></button>
+                        <button class="icon-option" data-icon="school"><span class="material-icons-round">school</span></button>
+                        <button class="icon-option" data-icon="sports_esports"><span class="material-icons-round">sports_esports</span></button>
+                        <button class="icon-option" data-icon="flight"><span class="material-icons-round">flight</span></button>
+                        <button class="icon-option" data-icon="savings"><span class="material-icons-round">savings</span></button>
+                        <button class="icon-option" data-icon="pets"><span class="material-icons-round">pets</span></button>
+                        <button class="icon-option" data-icon="checkroom"><span class="material-icons-round">checkroom</span></button>
+                        <button class="icon-option" data-icon="movie"><span class="material-icons-round">movie</span></button>
+                        <button class="icon-option" data-icon="fitness_center"><span class="material-icons-round">fitness_center</span></button>
+                        <button class="icon-option" data-icon="local_cafe"><span class="material-icons-round">local_cafe</span></button>
+                        <button class="icon-option" data-icon="phone_android"><span class="material-icons-round">phone_android</span></button>
+                        <button class="icon-option" data-icon="redeem"><span class="material-icons-round">redeem</span></button>
+                        <button class="icon-option" data-icon="work"><span class="material-icons-round">work</span></button>
+                        <button class="icon-option" data-icon="child_care"><span class="material-icons-round">child_care</span></button>
+                        <button class="icon-option" data-icon="more_horiz"><span class="material-icons-round">more_horiz</span></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Couleur</label>
+                    <div class="color-options" id="category-color-options">
+                        <button class="color-dot active" data-color="#2563eb" style="background:#2563eb"></button>
+                        <button class="color-dot" data-color="#7c3aed" style="background:#7c3aed"></button>
+                        <button class="color-dot" data-color="#059669" style="background:#059669"></button>
+                        <button class="color-dot" data-color="#dc2626" style="background:#dc2626"></button>
+                        <button class="color-dot" data-color="#d97706" style="background:#d97706"></button>
+                        <button class="color-dot" data-color="#ec4899" style="background:#ec4899"></button>
+                        <button class="color-dot" data-color="#06b6d4" style="background:#06b6d4"></button>
+                        <button class="color-dot" data-color="#84cc16" style="background:#84cc16"></button>
+                        <button class="color-dot" data-color="#f97316" style="background:#f97316"></button>
+                        <button class="color-dot" data-color="#6366f1" style="background:#6366f1"></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="category-type" class="setting-select">
+                        <option value="expense">Dépense</option>
+                        <option value="income">Revenu</option>
+                        <option value="both">Les deux</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal('modal-category-edit')">Annuler</button>
+                <button class="btn btn-danger hidden" id="btn-delete-category">Supprimer</button>
+                <button class="btn btn-primary" id="btn-save-category">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal-overlay" id="modal-search">
+        <div class="modal modal-full">
+            <div class="modal-header">
+                <div class="search-input-container">
+                    <span class="material-icons-round">search</span>
+                    <input type="text" id="search-input" placeholder="Rechercher une transaction..." autofocus>
+                </div>
+                <button class="icon-btn" onclick="app.closeModal('modal-search')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="search-results" class="transactions-list">
+                    <div class="empty-state small">
+                        <span class="material-icons-round">search</span>
+                        <p>Tapez pour rechercher</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail Modal -->
+    <div class="modal-overlay" id="modal-transaction-detail">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Détails</h2>
+                <button class="icon-btn" onclick="app.closeModal('modal-transaction-detail')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body" id="transaction-detail-body">
+                <!-- Dynamic -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-delete-transaction">Supprimer</button>
+                <button class="btn btn-primary" id="btn-edit-transaction">Modifier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/db.js"></script>
+    <script src="js/utils/currency.js"></script>
+    <script src="js/utils/charts.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/components/categories.js"></script>
+    <script src="js/components/transactions.js"></script>
+    <script src="js/components/budgets.js"></script>
+    <script src="js/components/stats.js"></script>
+    <script src="js/components/settings.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
