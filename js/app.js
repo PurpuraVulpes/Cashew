@@ -87,10 +87,11 @@ class CashewApp {
         // Recent transactions
         await this.transactions.loadRecent(5);
 
-        // Donut chart (avec délai pour attendre le rendu)
-requestAnimationFrame(() => {
-    this.drawHomeChart(monthTransactions.filter(t => t.type === 'expense'));
-});
+        // Donut chart (delayed to wait for DOM render)
+        requestAnimationFrame(() => {
+            this.drawHomeChart(monthTransactions.filter(t => t.type === 'expense'));
+        });
+    }
 
     drawHomeChart(expenses) {
         const categoryTotals = {};
@@ -104,7 +105,7 @@ requestAnimationFrame(() => {
 
         const data = Object.entries(categoryTotals)
             .sort((a, b) => b[1].value - a[1].value)
-            .map(([name, { value, color }]) => ({ name, value, color }));
+            .map(([name, obj]) => ({ name: name, value: obj.value, color: obj.color }));
 
         Charts.drawDonut('donut-chart', data);
 
@@ -142,7 +143,8 @@ requestAnimationFrame(() => {
         }
     }
 
-    showToast(message, duration = 2500) {
+    showToast(message, duration) {
+        if (!duration) duration = 2500;
         const toast = document.getElementById('toast');
         toast.textContent = message;
         toast.classList.add('show');
