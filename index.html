@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥜</text></svg>" />
+    <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b845c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Cashew" />
+    <meta name="description" content="Cashew — Suivez vos dépenses, budgets, horaires de travail et objectifs d'épargne. 100 % hors-ligne." />
+    <title>Cashew — Suivi de dépenses & budgets</title>
+    <script>
+      // Restaure le thème (sombre + couleur) avant le premier rendu : pas de flash
+      try {
+        var d = JSON.parse(localStorage.getItem('cashew-clone-v1') || '{}')
+        if (d.settings && d.settings.theme === 'dark') document.documentElement.classList.add('dark')
+        var v = JSON.parse(localStorage.getItem('cashew-theme-vars') || 'null')
+        if (v) {
+          for (var k in v) document.documentElement.style.setProperty('--color-brand-' + k, v[k])
+          if (v['600']) {
+            var m = document.querySelector('meta[name="theme-color"]')
+            if (m) m.setAttribute('content', v['600'])
+          }
+        }
+      } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
