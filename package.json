@@ -1,22 +1,24 @@
 {
-  "name": "cashew-budget",
+  "name": "cashew-clone",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Application budgetaire inspiree de Cashew — suivi des depenses, budgets et comptes, 100% locale.",
+  "description": "Application financière de suivi de dépenses et budgets, inspirée de Cashew",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "vite build",
-    "preview": "vite preview",
-    "test": "esbuild scripts/smoke.mjs --bundle --platform=node --format=cjs --jsx=automatic --loader:.mjs=jsx --outfile=dist/smoke.cjs && node dist/smoke.cjs"
+    "preview": "vite preview --host 0.0.0.0 --port 4173"
   },
   "dependencies": {
     "lucide-react": "^0.469.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "recharts": "^2.15.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^5.4.11"
+    "tailwindcss": "^4.0.0",
+    "vite": "^6.0.7"
   }
 }

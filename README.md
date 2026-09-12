@@ -1,98 +1,48 @@
-# 🥜 Cashew — Budget & Dépenses
+# 🥜 Cashew — Suivi de dépenses & budgets
 
-Application budgétaire **100 % locale et hors-ligne**, inspirée de
-[Cashew — Expense Budget Tracker](https://apps.apple.com/fr/app/cashew-expense-budget-tracker/id6463662930).
-Suivez vos comptes, vos dépenses et vos budgets avec une interface soignée,
-des graphiques clairs, un mode sombre et des couleurs d'accent personnalisables.
+Application web de finances personnelles inspirée de [Cashew — Expense Budget Tracker](https://apps.apple.com/fr/app/cashew-expense-budget-tracker/id6463662930).
 
-Il s'agit d'une application web (React + Vite), pensée mobile-first, qui se
-comporte comme une application native : feuilles inférieures, pavé numérique,
-navigation basse, animations, et installation possible en PWA.
+100 % hors-ligne : toutes les données sont stockées localement dans le navigateur (localStorage). Aucun compte, aucun serveur.
 
 ## ✨ Fonctionnalités
 
-- **Accueil** : cartes de comptes en carrousel, bannières de budgets avec
-  progression, jauge « Aujourd'hui » et suggestion de budget quotidien,
-  graphique d'évolution du solde sur 7 / 30 / 90 jours.
-- **Transactions** : recherche, filtres par compte, par type (revenu / dépense)
-  et par abonnements récurrents, regroupement par jour et totaux du mois.
-- **Budgets** : budgets mensuels, hebdomadaires ou uniques, associés à une ou
-  plusieurs catégories ; graphique en anneau (donut) des dépenses par catégorie
-  avec navigation par mois.
-- **Ajout rapide** : feuille « Ajouter une transaction » avec pavé numérique,
-  sélecteur de catégorie illustrée, compte, date et récurrence
-  (hebdomadaire / mensuelle / annuelle, matérialisée automatiquement).
-- **Comptes** : création et personnalisation (icône, couleur, solde initial,
-  inclusion dans le total).
-- **Personnalisation poussée** : thème clair / sombre / automatique,
-  **12 couleurs d'accent** ou **n'importe quelle couleur personnalisée**
-  (sélecteur de couleur), et **5 teintes de fond** (Vert, Bleu nuit, Gris,
-  Cacao, Noir pur AMOLED) — chacune déclinée en clair et en sombre.
-- Devise au choix (€, $, £, CHF, CAD, ¥).
-- **Vos données restent chez vous** : tout est stocké dans `localStorage`.
-  Export CSV (Excel), sauvegarde et restauration JSON, réinitialisation.
-- **Français d'abord**, formatage des montants et dates selon `fr-FR`.
+- **🏠 Accueil** : solde total, revenus/dépenses du mois, taux d'épargne, flux sur 30 jours, budgets, paie estimée et opérations récentes
+- **💸 Transactions** : dépenses, revenus et virements entre comptes — recherche, filtres (mois, compte, catégorie), regroupement par jour, export CSV
+- **📊 Statistiques** : évolution sur 6 mois, répartition par catégorie, plus grosses dépenses, solde net, moyenne par jour
+- **🎯 Budgets** : budget global + budgets par catégorie, alertes de dépassement, estimation du reste à dépenser par jour
+- **💼 Travail** : saisie des horaires/vacations, taux horaire, majorations (heures sup, nuit, dimanche), pointeuse en temps réel, estimation du salaire versé le mois suivant
+- **🏦 Comptes** : courant, épargne, espèces, carte, investissement — soldes calculés automatiquement, archivage
+- **🐷 Objectifs** : projets d'épargne avec progression, échéances et alimentation en un clic
+- **🔁 Abonnements** : suivi des prélèvements récurrents, coût mensuel estimé, enregistrement des échéances
+- **🏷️ Catégories** : personnalisables (icônes + couleurs), dépenses et revenus
+- **🎨 Thèmes** : 8 couleurs d'accent (Émeraude, Océan, Violet, Rose, Rouge, Orange, Lagoon, Minuit) + mode sombre
+- **🔒 Sécurité** : verrouillage par code PIN (4 ou 6 chiffres), verrouillage auto après inactivité, protection anti-bruteforce
+- **📲 PWA installable** : installez l'app sur téléphone/desktop, fonctionne hors-ligne via service worker
+- **⚙️ Paramètres** : centre de contrôle complet — profil, apparence, devise, compte par défaut, premier jour de la semaine, widgets de l'accueil, config travail, gestion des comptes / catégories / budgets / objectifs / abonnements, export/import JSON
 
-## 🛠️ Stack technique
-
-- [React 18](https://react.dev) avec hooks et contexte
-- [Vite 5](https://vitejs.dev)
-- [lucide-react](https://lucide.dev) pour les icônes
-- Graphiques en **SVG natif** (courbe lissée avec dégradé, anneau segmenté),
-  aucune bibliothèque de graphes
-- Aucun serveur, aucune télémétrie, aucun compte
-
-## 🚀 Démarrer
+## 🚀 Lancer le projet
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
+npm run dev
 ```
 
-Build de production :
+Puis ouvrez http://localhost:5173
 
 ```bash
-npm run build
-npm run preview
+npm run build   # build de production
+npm run preview # prévisualiser le build
 ```
 
-Test de fumée (rendu des 4 pages + contrôles sur les données) :
+## 🛠️ Stack
 
-```bash
-npm test
-```
+- React 18 + Vite 6
+- Tailwind CSS 4
+- Recharts (graphiques)
+- Lucide (icônes)
 
-## 🗂️ Structure du projet
+## 📱 Design
 
-```
-src/
-├── App.jsx               # Coquille de l'app, navigation, thème
-├── main.jsx
-├── index.css             # Design system (variables clair/sombre, composants)
-├── store.jsx             # État global + persistance + récurrences
-├── ui.jsx                # Piles de feuilles (bottom sheets)
-├── data.js               # Catégories, accents, devises
-├── seed.js               # Données de démonstration (dates dynamiques)
-├── utils.js              # Dates, montants, calculs budgétaires
-├── components/           # Sheets, navigation, graphiques SVG, lignes…
-├── sheets/               # Transaction, Compte, Budget
-└── pages/                # Accueil, Transactions, Budgets, Réglages
-```
-
-## 🔒 Modèle de données
-
-```ts
-Transaction {
-  id, type: 'income' | 'expense', amount, name,
-  categoryId, accountId, date: 'YYYY-MM-DD',
-  recurring: { frequency: 'weekly'|'monthly'|'yearly', every } | null,
-  parentId // pour les occurrences générées d'une récurrence
-}
-Account  { id, name, emoji, color, initialBalance, includeInTotal }
-Budget   { id, name, amount, period: 'monthly'|'weekly'|'oneoff',
-           startDate, endDate?, categoryIds[] }
-```
-
-## 📄 Licence
-
-MIT — fait avec plaisir, en s'inspirant de l'excellente application Cashew.
+- Mobile-first avec navigation basse + bouton d'action central (style Cashew)
+- Sidebar complète sur desktop
+- Mode sombre / clair + 8 couleurs de thème
