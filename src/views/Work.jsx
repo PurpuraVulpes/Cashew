@@ -99,7 +99,7 @@ export default function Work({ setView }) {
     <div>
       <MobileHeader
         title="Travail"
-        subtitle={`Estimation paie · ${monthKeyLabel(...payoutKey.split('-').map(Number))}`}
+        subtitle={`Estimation paie · ${monthKeyLabel(payoutKey)}`}
         onProfile={() => setView('settings')}
         right={
           <button onClick={() => setConfigOpen(true)} className="rounded-full bg-slate-100 p-2.5 dark:bg-white/10" aria-label="Paramètres de travail">
@@ -173,7 +173,7 @@ export default function Work({ setView }) {
             <ChevronLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
           </button>
           <button onClick={() => setMonthKey(currentMonthKey())} className="text-[15px] font-extrabold capitalize text-slate-900 dark:text-white">
-            {monthKeyLabel(...monthKey.split('-').map(Number))}
+            {monthKeyLabel(monthKey)}
           </button>
           <button onClick={() => setMonthKey(shiftMonthKey(monthKey, 1))} className="rounded-xl p-2.5 hover:bg-slate-100 dark:hover:bg-white/10" aria-label="Mois suivant">
             <ChevronRight className="h-5 w-5 text-slate-600 dark:text-slate-300" />
@@ -186,7 +186,7 @@ export default function Work({ setView }) {
           <div className="pointer-events-none absolute -bottom-20 right-24 h-48 w-48 rounded-full bg-white/10" />
           <p className="flex items-center gap-1.5 text-sm font-semibold text-white/80">
             <CalendarClock className="h-4 w-4" />
-            Salaire estimé · versé vers le {work.payDay} {monthKeyLabel(...payoutKey.split('-').map(Number))}
+            Salaire estimé · versé vers le {work.payDay} {monthKeyLabel(payoutKey)}
           </p>
           <p className="mt-1 text-4xl font-extrabold tabular-nums"><Money value={summary.pay} /></p>
           <p className="mt-1 text-sm font-semibold text-white/85">

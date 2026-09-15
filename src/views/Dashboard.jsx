@@ -353,7 +353,7 @@ export default function Dashboard({ setView, onAdd, onEditTx }) {
                 Paie estimée · <Money value={workSummary.pay} />
               </span>
               <span className="block truncate text-xs font-medium capitalize text-slate-500 dark:text-slate-400">
-                {formatDuration(workSummary.minutes)} en {monthKeyLabel(...monthKey.split('-').map(Number))} → vers le {work.payDay} {monthKeyLabel(...payoutKey.split('-').map(Number))}
+                {formatDuration(workSummary.minutes)} en {monthKeyLabel(monthKey)} → vers le {work.payDay} {monthKeyLabel(payoutKey)}
               </span>
             </span>
             <ChevronRight className="h-5 w-5 shrink-0 text-slate-300 dark:text-slate-600" />

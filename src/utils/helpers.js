@@ -46,7 +46,9 @@ const MONTHS_SHORT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.',
 
 export function monthLabel(year, month /* 1-12 */, short = false) {
   const arr = short ? MONTHS_SHORT : MONTHS_FR
-  return `${arr[month - 1]} ${year}`
+  const m = Number(month)
+  if (!m || m < 1 || m > 12) return `${year || ''}`.trim()
+  return `${arr[m - 1]} ${year}`
 }
 
 export function monthKeyOf(iso) {
@@ -58,14 +60,25 @@ export function currentMonthKey() {
 }
 
 export function shiftMonthKey(key, delta) {
-  const [y, m] = key.split('-').map(Number)
-  const d = new Date(y, m - 1 + delta, 1)
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  try {
+    const [y, m] = String(key).split('-').map(Number)
+    if (!y || !m) return currentMonthKey()
+    const d = new Date(y, m - 1 + delta, 1)
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  } catch {
+    return currentMonthKey()
+  }
 }
 
 export function monthKeyLabel(key, short = false) {
-  const [y, m] = key.split('-').map(Number)
-  return monthLabel(y, m, short)
+  try {
+    if (!key) return ''
+    const [y, m] = String(key).split('-').map(Number)
+    if (!y || !m) return String(key)
+    return monthLabel(y, m, short)
+  } catch {
+    return String(key || '')
+  }
 }
 
 export function dayLabel(iso) {

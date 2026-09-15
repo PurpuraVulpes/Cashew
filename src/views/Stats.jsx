@@ -71,7 +71,7 @@ export default function Stats({ setView }) {
     <div>
       <MobileHeader
         title="Statistiques"
-        subtitle={scope === 'month' ? monthKeyLabel(...monthKey.split('-').map(Number)) : '6 derniers mois'}
+        subtitle={scope === 'month' ? monthKeyLabel(monthKey) : '6 derniers mois'}
         onProfile={() => setView('settings')}
       />
       <PageHeader title="Statistiques" subtitle="Comprenez vos habitudes de dépenses" />
@@ -88,7 +88,7 @@ export default function Stats({ setView }) {
               <ChevronLeft className="h-5 w-5 text-slate-600 dark:text-slate-300" />
             </button>
             <button onClick={() => setMonthKey(currentMonthKey())} className="text-[15px] font-extrabold capitalize text-slate-900 dark:text-white">
-              {monthKeyLabel(...monthKey.split('-').map(Number))}
+              {monthKeyLabel(monthKey)}
             </button>
             <button onClick={() => setMonthKey(shiftMonthKey(monthKey, 1))} className="rounded-xl p-2.5 hover:bg-slate-100 dark:hover:bg-white/10" aria-label="Suivant">
               <ChevronRight className="h-5 w-5 text-slate-600 dark:text-slate-300" />
