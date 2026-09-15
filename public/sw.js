@@ -1,5 +1,5 @@
 /* Cashew — Service Worker : l'app reste utilisable hors-ligne */
-const CACHE = 'cashew-v1'
+const CACHE = 'cashew-v2'
 const ROOT = self.registration.scope
 
 self.addEventListener('install', (e) => {

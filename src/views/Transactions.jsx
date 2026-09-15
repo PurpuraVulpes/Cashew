@@ -81,7 +81,7 @@ export default function Transactions({ onAdd, onEditTx, onDeleteTx, onDuplicate 
     <div>
       <MobileHeader
         title="Transactions"
-        subtitle={`${filtered.length} opération${filtered.length > 1 ? 's' : ''} · ${monthKeyLabel(...monthKey.split('-').map(Number))}`}
+        subtitle={`${filtered.length} opération${filtered.length > 1 ? 's' : ''} · ${monthKeyLabel(monthKey)}`}
         onProfile={() => {}}
         right={
           <button onClick={exportCSV} className="rounded-full bg-slate-100 p-2.5 dark:bg-white/10" aria-label="Exporter CSV">
@@ -103,7 +103,7 @@ export default function Transactions({ onAdd, onEditTx, onDeleteTx, onDuplicate 
           </button>
           <div className="text-center">
             <button onClick={() => setMonthKey(currentMonthKey())} className="text-[15px] font-extrabold capitalize text-slate-900 dark:text-white">
-              {monthKeyLabel(...monthKey.split('-').map(Number))}
+              {monthKeyLabel(monthKey)}
             </button>
             {monthKey !== currentMonthKey() && (
               <button onClick={() => setMonthKey(currentMonthKey())} className="block w-full text-[11px] font-bold text-brand-600">Revenir à aujourd'hui</button>

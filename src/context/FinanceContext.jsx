@@ -10,7 +10,22 @@ function init() {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const data = JSON.parse(raw)
-      if (data && Array.isArray(data.transactions)) return data
+      if (data && Array.isArray(data.transactions) && Array.isArray(data.accounts)) {
+        // Fusionne avec le seed pour garantir tous les champs même après mise à jour du modèle
+        const seed = buildSeed()
+        return {
+          accounts: Array.isArray(data.accounts) ? data.accounts : seed.accounts,
+          categories: Array.isArray(data.categories) ? data.categories : seed.categories,
+          transactions: Array.isArray(data.transactions) ? data.transactions : seed.transactions,
+          budgets: Array.isArray(data.budgets) ? data.budgets : seed.budgets,
+          goals: Array.isArray(data.goals) ? data.goals : seed.goals,
+          recurring: Array.isArray(data.recurring) ? data.recurring : seed.recurring,
+          shifts: Array.isArray(data.shifts) ? data.shifts : seed.shifts,
+          work: data.work || seed.work,
+          workTimer: data.workTimer || null,
+          settings: { ...seed.settings, ...(data.settings || {}) },
+        }
+      }
     }
   } catch { /* ignore */ }
   return buildSeed()
@@ -126,14 +141,21 @@ export function FinanceProvider({ children }) {
   }, [state.settings?.themeColor])
 
   const value = useMemo(() => {
-    const accountById = Object.fromEntries(state.accounts.map((a) => [a.id, a]))
-    const categoryById = Object.fromEntries(state.categories.map((c) => [c.id, c]))
+    const accounts = Array.isArray(state.accounts) ? state.accounts : []
+    const categories = Array.isArray(state.categories) ? state.categories : []
+    const transactions = Array.isArray(state.transactions) ? state.transactions : []
+    const budgets = Array.isArray(state.budgets) ? state.budgets : []
+    const goals = Array.isArray(state.goals) ? state.goals : []
+    const recurring = Array.isArray(state.recurring) ? state.recurring : []
+
+    const accountById = Object.fromEntries(accounts.map((a) => [a.id, a]))
+    const categoryById = Object.fromEntries(categories.map((c) => [c.id, c]))
     const theme = getTheme(state.settings?.themeColor || DEFAULT_THEME_ID)
 
     // Soldes calculés
     const balances = {}
-    for (const a of state.accounts) balances[a.id] = Number(a.initialBalance) || 0
-    for (const t of state.transactions) {
+    for (const a of accounts) balances[a.id] = Number(a.initialBalance) || 0
+    for (const t of transactions) {
       const amt = Number(t.amount) || 0
       if (t.type === 'income') balances[t.accountId] = (balances[t.accountId] ?? 0) + amt
       else if (t.type === 'expense') balances[t.accountId] = (balances[t.accountId] ?? 0) - amt
@@ -144,7 +166,7 @@ export function FinanceProvider({ children }) {
     }
     const totalBalance = Object.values(balances).reduce((s, v) => s + v, 0)
 
-    const txByMonth = (monthKey) => state.transactions.filter((t) => monthKeyOf(t.date) === monthKey)
+    const txByMonth = (monthKey) => transactions.filter((t) => monthKeyOf(t.date) === monthKey)
 
     const monthStats = (monthKey) => {
       let income = 0, expense = 0
@@ -157,16 +179,16 @@ export function FinanceProvider({ children }) {
 
     return {
       state, dispatch,
-      accounts: state.accounts,
-      categories: state.categories,
-      transactions: state.transactions,
-      budgets: state.budgets,
-      goals: state.goals,
-      recurring: state.recurring,
+      accounts,
+      categories,
+      transactions,
+      budgets,
+      goals,
+      recurring,
       shifts: state.shifts || [],
       work: { ...DEFAULT_WORK, ...(state.work || {}), rates: { ...DEFAULT_WORK.rates, ...(state.work?.rates || {}) } },
       workTimer: state.workTimer || null,
-      settings: state.settings,
+      settings: state.settings || { name: '', currency: 'EUR', theme: 'light', themeColor: 'emerald', hideBalances: false, defaultAccountId: '', weekStart: 'monday', widgets: {} },
       accountById, categoryById,
       balances, totalBalance,
       txByMonth, monthStats,
